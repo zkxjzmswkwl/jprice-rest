@@ -1,13 +1,15 @@
 package jprice.rest;
 
+import java.net.URL;
+
 public class JsonRequest extends AbstractRequest {
 	
-	public JsonRequest(APIConnection _apiConnection, String _requestURL, String _requestMethod) {
-		super(_apiConnection, _requestURL, _requestMethod);
+	public JsonRequest(URL _requestURL, String _requestMethod) {
+		super(_requestURL, _requestMethod);
 	}
 
-	public JsonRequest(APIConnection _apiConnection, String _requestURL, String _requestMethod, String _requestData) {
-		super(_apiConnection, _requestURL, _requestMethod, _requestData);
+	public JsonRequest(URL _requestURL, String _requestMethod, String _requestData) {
+		super(_requestURL, _requestMethod, _requestData);
 	}
 
 	@Override

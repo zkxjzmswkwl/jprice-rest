@@ -1,15 +1,17 @@
 package jprice.rest;
 
 public interface CRUD {
-	
+
 	Response create(String _requestData);
-	
+
 	Response list();
-	
-	Response retrieve(int _pk);
-	
-	Response update(int _pk, String _requestData);
-	
-	Response destroy(int _pk);
+
+	Response retrieve();
+
+	Response retrieve(int _id);
+
+	Response update(int _id, String _requestData);
+
+	Response destroy(int _id);
 
 }

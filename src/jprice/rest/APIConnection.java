@@ -1,80 +1,48 @@
 package jprice.rest;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Creates a new connection with the requested API
  * 
  * @author JPrice
  */
-public class APIConnection implements CRUD {
+public class APIConnection {
 
-	private String base;
-	private String endpoint;
-	private String urlParams;
-	private int timeout;
+	protected URL baseURL;
+	protected String urlParams;
+	protected int timeout;
+	protected HttpURLConnection httpConnection;
 
-	public APIConnection(String _base, String _endpoint, int _timeout) {
-		base = _base;
-		endpoint = _endpoint;
+	public APIConnection(String _base, int _timeout) {
+		try {
+			baseURL = new URL(_base);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		urlParams = "";
 		timeout = _timeout;
 	}
 
-	public APIConnection(String _base, String _endpoint, String _urlParams, int _timeout) {
-		this(_base, _endpoint, _timeout);
+	public APIConnection(String _base, String _urlParams, int _timeout) {
+		this(_base, _timeout);
 		urlParams = _urlParams;
 	}
 
-	/**
-	 * Builds the url as www.base.com/endpoint/?urlParams
-	 */
-	private String buildURL() {
-		return base + endpoint + urlParams;
-	}
-
-	/**
-	 * Builds the url as www.base.com/endpoint/pk/?urlParams
-	 */
-	private String buildURL(int _pk) {
-		return base + endpoint + _pk + "/" + urlParams;
-	}
-
-	/**
-	 * Supported CRUD Operations
-	 */
-	@Override
-	public Response create(String _requestData) {
-		JsonRequest request = new JsonRequest(this, buildURL(), "POST", _requestData);
-		return post(request);
-	}
-
-	@Override
-	public Response list() {
-		JsonRequest request = new JsonRequest(this, buildURL(), "GET");
-		return get(request);
-	}
-
-	@Override
-	public Response retrieve(int _pk) {
-		JsonRequest request = new JsonRequest(this, buildURL(_pk), "GET");
-		return get(request);
-	}
-
-	@Override
-	public Response update(int _pk, String _requestData) {
-		JsonRequest request = new JsonRequest(this, buildURL(_pk), "PUT", _requestData);
-		return put(request);
-	}
-
-	/**
-	 * Currently not supported
-	 */
-	@Override
-	public Response destroy(int _pk) {
-		return null;
+	private void writeBytes(String data) {
+		try {
+			OutputStream os = httpConnection.getOutputStream();
+			os.write(data.getBytes());
+			os.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -84,18 +52,19 @@ public class APIConnection implements CRUD {
 	 *            The request data passed to the api
 	 * @return the response the server sends back
 	 */
-	private Response get(Request _request) {
+	public Response get(Request _request) {
 		try {
-			HttpURLConnection connection = _request.getHttpConnection();
-			connection.connect();
+			httpConnection = _request.getHttpConnection();
+			httpConnection.setReadTimeout(timeout);
+			httpConnection.connect();
 
 			String content = "";
-			int responseCode = connection.getResponseCode();
+			int responseCode = httpConnection.getResponseCode();
 
 			switch (responseCode) {
 			case 200:
 			case 201:
-				BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				BufferedReader br = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
 				StringBuilder sb = new StringBuilder();
 				String line;
 				while ((line = br.readLine()) != null) {
@@ -121,13 +90,14 @@ public class APIConnection implements CRUD {
 	 *            The request data passed to the api
 	 * @return the newly created object
 	 */
-	private Response post(Request _request) {
+	public Response post(Request _request) {
 		try {
-			HttpURLConnection connection = _request.getHttpConnection();
-			Request.writeBytes(connection, _request.getRequestData());
+			httpConnection = _request.getHttpConnection();
+			httpConnection.setReadTimeout(timeout);
+			writeBytes(_request.getRequestData());
 
 			String content = "";
-			int responseCode = connection.getResponseCode();
+			int responseCode = httpConnection.getResponseCode();
 
 			if (responseCode != HttpURLConnection.HTTP_CREATED) {
 				throw new RuntimeException("Failed : HTTP error code : " + responseCode);
@@ -136,14 +106,14 @@ public class APIConnection implements CRUD {
 			switch (responseCode) {
 			case 200:
 			case 201:
-				BufferedReader br = new BufferedReader(new InputStreamReader((connection.getInputStream())));
+				BufferedReader br = new BufferedReader(new InputStreamReader((httpConnection.getInputStream())));
 				StringBuilder sb = new StringBuilder();
 
 				String line;
 				while ((line = br.readLine()) != null) {
 					sb.append(line);
 				}
-				connection.disconnect();
+				httpConnection.disconnect();
 				content = sb.toString();
 				return new Response(responseCode, content);
 			default:
@@ -163,25 +133,26 @@ public class APIConnection implements CRUD {
 	 *            The request data passed to the api
 	 * @return the object that has been updatedF
 	 */
-	private Response put(Request _request) {
+	public Response put(Request _request) {
 		try {
-			HttpURLConnection connection = _request.getHttpConnection();
-			Request.writeBytes(connection, _request.getRequestData());
+			httpConnection = _request.getHttpConnection();
+			httpConnection.setReadTimeout(timeout);
+			writeBytes(_request.getRequestData());
 
 			String content = "";
-			int responseCode = connection.getResponseCode();
+			int responseCode = httpConnection.getResponseCode();
 
 			switch (responseCode) {
 			case 200:
 			case 201:
-				BufferedReader br = new BufferedReader(new InputStreamReader((connection.getInputStream())));
+				BufferedReader br = new BufferedReader(new InputStreamReader((httpConnection.getInputStream())));
 				StringBuilder sb = new StringBuilder();
 
 				String line;
 				while ((line = br.readLine()) != null) {
 					sb.append(line);
 				}
-				connection.disconnect();
+				httpConnection.disconnect();
 				content = sb.toString();
 				return new Response(responseCode, content);
 			default:
@@ -191,6 +162,14 @@ public class APIConnection implements CRUD {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public URL getBaseURL() {
+		return baseURL;
+	}
+	
+	public String getURLParams() {
+		return urlParams;
 	}
 
 	public int getTimeout() {

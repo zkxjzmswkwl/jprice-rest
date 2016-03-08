@@ -2,7 +2,6 @@ package jprice.rest;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
@@ -13,22 +12,10 @@ import java.net.URL;
  */
 public abstract class AbstractRequest implements Request {
 
-	protected APIConnection apiConnection;
-	protected HttpURLConnection httpConnection;
-	protected String requestURL;
+	protected URL requestURL;
 	protected String requestMethod;
 	protected String requestData;
-
-	/**
-	 * I still have yet to decide if this constructor is useful or not
-	 */
-	// public AbstractRequest(Request _request) {
-	// apiConnection = _request.getAPIConnection();
-	// httpConnection = _request.getHttpConnection();
-	// requestURL = _request.getRequestURL();
-	// requestMethod = _request.getRequestMethod();
-	// requestData = _request.getRequestData();
-	// }
+	protected HttpURLConnection httpConnection;
 
 	/**
 	 * Creates a new request and sets connection headers
@@ -37,15 +24,12 @@ public abstract class AbstractRequest implements Request {
 	 * @param _requestURL
 	 * @param _requestMethod
 	 */
-	public AbstractRequest(APIConnection _apiConnection, String _requestURL, String _requestMethod) {
-		apiConnection = _apiConnection;
+	public AbstractRequest(URL _requestURL, String _requestMethod) {
 		requestURL = _requestURL;
 		requestMethod = _requestMethod;
-
+		requestData = "";
 		try {
-			httpConnection = (HttpURLConnection) new URL(requestURL).openConnection();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			httpConnection = (HttpURLConnection) requestURL.openConnection();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -60,9 +44,8 @@ public abstract class AbstractRequest implements Request {
 	 * @param _requestMethod
 	 * @param _requestData
 	 */
-	public AbstractRequest(APIConnection _apiConnection, String _requestURL, String _requestMethod,
-			String _requestData) {
-		this(_apiConnection, _requestURL, _requestMethod);
+	public AbstractRequest(URL _requestURL, String _requestMethod, String _requestData) {
+		this(_requestURL, _requestMethod);
 		requestData = _requestData;
 	}
 
@@ -77,7 +60,6 @@ public abstract class AbstractRequest implements Request {
 			httpConnection.setRequestProperty("Content-length", "0");
 			httpConnection.setUseCaches(false);
 			httpConnection.setAllowUserInteraction(false);
-			httpConnection.setReadTimeout(apiConnection.getTimeout());
 			httpConnection.setDoOutput(true);
 			httpConnection.setInstanceFollowRedirects(false);
 		} catch (ProtocolException e) {
@@ -85,17 +67,12 @@ public abstract class AbstractRequest implements Request {
 		}
 	}
 
-	@Override
-	public APIConnection getAPIConnection() {
-		return apiConnection;
-	}
-
 	public HttpURLConnection getHttpConnection() {
 		return httpConnection;
 	}
 
 	@Override
-	public String getRequestURL() {
+	public URL getRequestURL() {
 		return requestURL;
 	}
 
