@@ -163,11 +163,11 @@ public class APIConnection {
 		}
 		return null;
 	}
-	
+
 	public URL getBaseURL() {
 		return baseURL;
 	}
-	
+
 	public String getURLParams() {
 		return urlParams;
 	}

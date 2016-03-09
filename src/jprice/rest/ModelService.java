@@ -4,13 +4,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public abstract class ModelService implements CRUD {
-	
+
 	private APIConnection api;
-	
+
 	public ModelService(APIConnection _api) {
 		api = _api;
 	}
-	
+
 	public abstract String getEndpoint();
 
 	private URL buildURL() {
@@ -21,7 +21,7 @@ public abstract class ModelService implements CRUD {
 			return null;
 		}
 	}
-	
+
 	private URL buildURL(int _id) {
 		try {
 			return new URL(api.getBaseURL() + getEndpoint() + _id + "/" + api.getURLParams());
@@ -30,7 +30,7 @@ public abstract class ModelService implements CRUD {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public Response create(String _requestData) {
 		JsonRequest request = new JsonRequest(buildURL(), "POST", _requestData);

@@ -1,12 +1,13 @@
 package jprice.rest;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 @SuppressWarnings({ "unchecked", "serial" })
 public class DataModel extends JSONObject {
-
+	
 	private JSONParser parser;
 
 	public DataModel() {
@@ -16,6 +17,11 @@ public class DataModel extends JSONObject {
 	public DataModel(JSONObject obj) {
 		this();
 		putAll(obj);
+	}
+
+	public DataModel(String listName, JSONArray arr) {
+		this();
+		put(listName, arr);
 	}
 
 	public DataModel(String jsonString) {
@@ -39,6 +45,13 @@ public class DataModel extends JSONObject {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void listFields() {
+		for (Object key : keySet()) {
+			System.out.printf("%s: %s\n", key, get(key));
+		}
+		System.out.println();
 	}
 
 	public String serialize() {

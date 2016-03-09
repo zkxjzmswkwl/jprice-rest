@@ -3,7 +3,7 @@ package jprice.rest;
 import java.net.URL;
 
 public class JsonRequest extends AbstractRequest {
-	
+
 	public JsonRequest(URL _requestURL, String _requestMethod) {
 		super(_requestURL, _requestMethod);
 	}

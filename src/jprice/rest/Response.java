@@ -1,7 +1,7 @@
 package jprice.rest;
 
 public class Response {
-	
+
 	private int responseCode;
 	private String content;
 
@@ -9,13 +9,13 @@ public class Response {
 		responseCode = _responseCode;
 		content = _content;
 	}
-	
+
 	public int getResponseCode() {
 		return responseCode;
 	}
-	
+
 	public String getContent() {
 		return content;
 	}
-	
+
 }
