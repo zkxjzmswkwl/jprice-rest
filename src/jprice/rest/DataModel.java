@@ -7,7 +7,7 @@ import org.json.simple.parser.ParseException;
 
 @SuppressWarnings({ "unchecked", "serial" })
 public class DataModel extends JSONObject {
-	
+
 	private JSONParser parser;
 
 	public DataModel() {

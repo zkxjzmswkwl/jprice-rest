@@ -1,6 +1,6 @@
 package jprice.rest;
 
-public interface CRUD {
+public interface I_CRUD {
 
 	Response create(String _requestData);
 

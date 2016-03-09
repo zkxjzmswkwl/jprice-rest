@@ -1,2 +1,2 @@
 # Java-REST-Client
-A REST client I'm attempting to build to build in Java for fun.
+A Java HTTP/REST library created for my own educational purposes.
