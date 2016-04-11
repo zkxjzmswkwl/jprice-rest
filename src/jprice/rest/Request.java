@@ -80,6 +80,11 @@ public abstract class Request implements IRequest {
 		writeBytes(requestData);
 		return new Response(http);
 	}
+	
+	public Response delete() {
+		connect("DELETE");
+		return new Response(http);
+	}
 
 	@Override
 	public URL getRequestURL() {

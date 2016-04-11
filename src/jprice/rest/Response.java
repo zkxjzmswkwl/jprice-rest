@@ -46,6 +46,17 @@ public class Response implements IResponse {
 		return null;
 	}
 
+	public String toJSONString() {
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObj = null;
+		try {
+			jsonObj = (JSONObject) parser.parse(getContent());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return jsonObj.toJSONString();
+	}
+
 	@Override
 	public String getContentType() {
 		return http.getContentType();
@@ -54,23 +65,6 @@ public class Response implements IResponse {
 	@Override
 	public String getRequestMethod() {
 		return http.getRequestMethod();
-	}
-
-	@Override
-	public JSONObject asJSONObject() {
-		try {
-			JSONParser parser = new JSONParser();
-			JSONObject jsonContent = (JSONObject) parser.parse(getContent());
-			return jsonContent;
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
-	public String asJSONString() {
-		return asJSONObject().toJSONString();
 	}
 
 	@Override
