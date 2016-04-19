@@ -2,6 +2,7 @@ package jprice.rest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 
 /**
  * A small wrapper for making quick requests to a REST database.
@@ -45,6 +46,11 @@ public class JPRest {
 				public String getContentType() {
 					return "application/json";
 				}
+
+				@Override
+				public HashMap<String, String> customRequestHeaders() {
+					return null;
+				}
 			}.get();
 			break;
 		case "POST":
@@ -54,6 +60,11 @@ public class JPRest {
 				public String getContentType() {
 					return "application/json";
 				}
+
+				@Override
+				public HashMap<String, String> customRequestHeaders() {
+					return null;
+				}
 			}.post(args[2]);
 			break;
 		case "PUT":
@@ -62,6 +73,11 @@ public class JPRest {
 				public String getContentType() {
 					return "application/json";
 				}
+
+				@Override
+				public HashMap<String, String> customRequestHeaders() {
+					return null;
+				}
 			}.put(args[2]);
 			break;
 		case "DELETE":
@@ -69,6 +85,12 @@ public class JPRest {
 				@Override
 				public String getContentType() {
 					return "application/json";
+				}
+
+				@Override
+				public HashMap<String, String> customRequestHeaders() {
+					// TODO Auto-generated method stub
+					return null;
 				}
 			}.delete();
 			break;

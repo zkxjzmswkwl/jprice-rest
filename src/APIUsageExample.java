@@ -1,5 +1,6 @@
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 
 import jprice.rest.Request;
 import jprice.rest.Response;
@@ -34,6 +35,11 @@ public class APIUsageExample {
 			@Override
 			public String getContentType() {
 				return "application/json";
+			}
+
+			@Override
+			public HashMap<String, String> customRequestHeaders() {
+				return null;
 			}
 		}.post("{\"title\":\"New Post\",\"body\":\"Post this to the database!\"}");
 	}

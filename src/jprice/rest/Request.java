@@ -36,6 +36,12 @@ public abstract class Request implements IRequest {
 			http.setRequestMethod(requestMethod);
 			http.setRequestProperty("Content-Type", getContentType());
 			http.setRequestProperty("Accept", getContentType());
+			if (customRequestHeaders() != null) {
+				for (String property : customRequestHeaders().keySet()) {
+					http.setRequestProperty(property,
+							(String) customRequestHeaders().get(property));
+				}
+			}
 			http.setDoOutput(true);
 			http.setAllowUserInteraction(false);
 			http.setInstanceFollowRedirects(false);
@@ -80,7 +86,7 @@ public abstract class Request implements IRequest {
 		writeBytes(requestData);
 		return new Response(http);
 	}
-	
+
 	public Response delete() {
 		connect("DELETE");
 		return new Response(http);
