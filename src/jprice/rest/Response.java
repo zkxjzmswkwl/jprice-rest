@@ -3,23 +3,56 @@ package jprice.rest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class Response implements IResponse {
+public class Response {
 
 	public HttpURLConnection http;
 
-	public Response(HttpURLConnection _http) {
-		http = _http;
+	public Response(Request _request) {
+		try {
+			http = (HttpURLConnection) new URL(_request.url).openConnection();
+			http.setReadTimeout(5000);
+			http.setRequestMethod(_request.method.toString());
+			http.setRequestProperty("Content-Type", _request.contentType);
+			http.setRequestProperty("Accept", _request.contentType);
+//			if (_request.headers.keys() != null) {
+//				for (String property : _request.headers.keys()) {
+//					http.setRequestProperty(property, _request.headers.get(property));
+//				}
+//			}
+			http.setDoOutput(true);
+			http.setAllowUserInteraction(false);
+			http.setInstanceFollowRedirects(false);
+			http.connect();
+			if (_request.body != null) {
+				writeBytes((String) _request.body);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Override
+	private void writeBytes(String data) {
+		try {
+			OutputStream os = http.getOutputStream();
+			os.write(data.getBytes());
+			os.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public URL getURL() {
+		return http.getURL();
+	}
+
 	public int getResponseCode() {
 		try {
 			return http.getResponseCode();
@@ -28,8 +61,32 @@ public class Response implements IResponse {
 		}
 		return -1;
 	}
+	
+	public String getResponseMessage() {
+		try {
+			return http.getResponseMessage();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public boolean ok() {
+		// True if the response's status is within 200-299
+		if (getResponseCode() >= 200 && getResponseCode() <= 299) {
+			return true;
+		}
+		return false;
+	}
 
-	@Override
+	public String getContentType() {
+		return http.getContentType();
+	}
+
+	public String getRequestMethod() {
+		return http.getRequestMethod();
+	}
+
 	public String getContent() {
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(http.getInputStream()));
@@ -55,21 +112,6 @@ public class Response implements IResponse {
 			e.printStackTrace();
 		}
 		return jsonObj.toJSONString();
-	}
-
-	@Override
-	public String getContentType() {
-		return http.getContentType();
-	}
-
-	@Override
-	public String getRequestMethod() {
-		return http.getRequestMethod();
-	}
-
-	@Override
-	public Map<String, List<String>> getHeaderFields() {
-		return http.getHeaderFields();
 	}
 
 }
