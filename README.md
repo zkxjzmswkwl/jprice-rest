@@ -8,10 +8,10 @@ A Java HTTP/REST library created for my own educational purposes.
 ##### Example GET request with the API
 
 ```java
-	Response res = new Request(url) {
-		@Override
-		public String getContentType() {
-			return "application/json";
-		}
-	}.get();
+Response res = new Request(url) {
+	@Override
+	public String getContentType() {
+		return "application/json";
+	}
+}.get();
 ```
