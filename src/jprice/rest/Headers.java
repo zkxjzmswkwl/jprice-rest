@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class Headers {
 
 	protected HashMap<String, String> headers;
-	
+
 	public Headers() {
 		headers = new HashMap<String, String>();
 	}

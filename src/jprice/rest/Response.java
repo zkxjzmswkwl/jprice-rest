@@ -22,11 +22,11 @@ public class Response {
 			http.setRequestMethod(_request.method.toString());
 			http.setRequestProperty("Content-Type", _request.contentType);
 			http.setRequestProperty("Accept", _request.contentType);
-//			if (_request.headers.keys() != null) {
-//				for (String property : _request.headers.keys()) {
-//					http.setRequestProperty(property, _request.headers.get(property));
-//				}
-//			}
+			// if (_request.headers.keys() != null) {
+			// for (String property : _request.headers.keys()) {
+			// http.setRequestProperty(property, _request.headers.get(property));
+			// }
+			// }
 			http.setDoOutput(true);
 			http.setAllowUserInteraction(false);
 			http.setInstanceFollowRedirects(false);
@@ -48,7 +48,7 @@ public class Response {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public URL getURL() {
 		return http.getURL();
 	}
@@ -61,17 +61,21 @@ public class Response {
 		}
 		return -1;
 	}
-	
-	public String getResponseMessage() {
-		try {
-			return http.getResponseMessage();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+
+	/**
+	 * @return
+	 *         Gets the HTTP response message, if any, returned along with the
+	 *         response code from a server.
+	 * @throws IOException
+	 */
+	public String getResponseMessage() throws IOException {
+		return http.getResponseMessage();
 	}
-	
-	// True if the response's status is within 200-299
+
+	/**
+	 * @return
+	 *         When HTTP response code in range 200-299, return true. Else false.
+	 */
 	public boolean ok() {
 		return (getResponseCode() >= 200 && getResponseCode() <= 299);
 	}
@@ -84,20 +88,15 @@ public class Response {
 		return http.getRequestMethod();
 	}
 
-	public String getContent() {
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(http.getInputStream()));
-			StringBuilder sb = new StringBuilder();
-			String line;
-			while ((line = br.readLine()) != null) {
-				sb.append(line + "\n");
-			}
-			br.close();
-			return sb.toString();
-		} catch (IOException e) {
-			e.printStackTrace();
+	public String getContent() throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(http.getInputStream()));
+		StringBuilder sb = new StringBuilder();
+		String line;
+		while ((line = br.readLine()) != null) {
+			sb.append(line + "\n");
 		}
-		return null;
+		br.close();
+		return sb.toString();
 	}
 
 	public String toJSONString() {
@@ -105,7 +104,7 @@ public class Response {
 		JSONObject jsonObj = null;
 		try {
 			jsonObj = (JSONObject) parser.parse(getContent());
-		} catch (ParseException e) {
+		} catch (ParseException | IOException e) {
 			e.printStackTrace();
 		}
 		return jsonObj.toJSONString();
