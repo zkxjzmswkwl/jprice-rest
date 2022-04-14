@@ -71,12 +71,9 @@ public class Response {
 		return null;
 	}
 	
+	// True if the response's status is within 200-299
 	public boolean ok() {
-		// True if the response's status is within 200-299
-		if (getResponseCode() >= 200 && getResponseCode() <= 299) {
-			return true;
-		}
-		return false;
+		return (getResponseCode() >= 200 && getResponseCode() <= 299);
 	}
 
 	public String getContentType() {

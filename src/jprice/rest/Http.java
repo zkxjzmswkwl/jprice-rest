@@ -1,11 +1,6 @@
 package jprice.rest;
 
 public class Http {
-
-	public Http() {
-
-	}
-
 	public Response get(String _url) {
 		Request request = new Request(_url, RequestMethod.GET, "application/json", null);
 		Response response = new Response(request);
@@ -17,5 +12,4 @@ public class Http {
 		Response response = new Response(request);
 		return response;
 	}
-
 }
